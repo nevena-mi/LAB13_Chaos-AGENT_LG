@@ -5,5 +5,9 @@
 - Step 3: LLM bootstrap is added with `load_dotenv()` and `ChatOpenAI(...)`.
 - Step 4: `intake_node` is implemented and `test_4_build_intake_node.py` demonstrates it.
 - Step 5: `validation_node` is implemented and `test_5_build_validation_node.py` demonstrates it.
+- Step 6: `investigation_node` is implemented and `test_6_investigation_node.py` demonstrates it.
+- Step 7: `resolution_node` is implemented and `test_7_resolution_node.py` demonstrates it.
+- Step 8: `closure_node` is implemented and `test_8_closure_noda.py` demonstrates it.
+- Step 9: `reject_node` is implemented and `test_9_reject_node.py` demonstrates it.
 - `normalobjects_langchain.py` stays as reference context only.
-- Next planned work: investigation node and later routing logic.
+- Next planned work: graph wiring and later routing logic.

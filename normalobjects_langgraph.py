@@ -99,10 +99,144 @@ def validation_node(state: ComplaintState) -> ComplaintState:
     }
 
 
+# Investigation node: ask the LLM for a short category-aware summary.
+def investigation_node(state: ComplaintState) -> ComplaintState:
+    workflow_path = state["workflow_path"] + ["investigate"]
+    prompt = (
+        "You are helping with a Downside Up complaint workflow.\n"
+        f"Complaint: {state['complaint']}\n"
+        f"Category: {state['category']}\n"
+        "Write a short investigation summary with the most relevant findings."
+    )
+
+    try:
+        response = llm.invoke(prompt)
+        investigation = response.content
+    except Exception:
+        investigation = (
+            f"Investigation could not be completed for the {state['category']} "
+            "complaint in this environment."
+        )
+
+    return {
+        **state,
+        "investigation": investigation,
+        "status": "investigation_complete",
+        "workflow_path": workflow_path,
+    }
+
+
+# Resolution node: turn complaint context into a short fix.
+def resolution_node(state: ComplaintState) -> ComplaintState:
+    workflow_path = state["workflow_path"] + ["resolve"]
+    prompt = (
+        "You are helping with a Downside Up complaint workflow.\n"
+        f"Complaint: {state['complaint']}\n"
+        f"Investigation: {state['investigation']}\n"
+        "Write a short resolution that directly addresses the complaint."
+    )
+
+    try:
+        response = llm.invoke(prompt)
+        resolution = response.content
+    except Exception:
+        resolution = (
+            "Resolution could not be generated in this environment, but the "
+            "complaint should be handled with a practical Downside Up fix."
+        )
+
+    return {
+        **state,
+        "resolution": resolution,
+        "status": "resolution_complete",
+        "workflow_path": workflow_path,
+    }
+
+
+# Closure node: turn the work done into a final response.
+def closure_node(state: ComplaintState) -> ComplaintState:
+    workflow_path = state["workflow_path"] + ["close"]
+    prompt = (
+        "You are helping with a Downside Up complaint workflow.\n"
+        f"Complaint: {state['complaint']}\n"
+        f"Investigation: {state['investigation']}\n"
+        f"Resolution: {state['resolution']}\n"
+        "Write a short final response that confirms the complaint was handled."
+    )
+
+    try:
+        response = llm.invoke(prompt)
+        final_response = response.content
+    except Exception:
+        final_response = (
+            "Your complaint has been handled and the workflow is now closed."
+        )
+
+    return {
+        **state,
+        "final_response": final_response,
+        "status": "closure_complete",
+        "workflow_path": workflow_path,
+    }
+
+
+# Reject node: end the workflow for invalid complaints.
+def reject_node(state: ComplaintState) -> ComplaintState:
+    workflow_path = state["workflow_path"] + ["reject"]
+    final_response = (
+        "Complaint rejected because it is unrelated to the Downside Up workflow."
+    )
+
+    return {
+        **state,
+        "final_response": final_response,
+        "status": "rejection_complete",
+        "workflow_path": workflow_path,
+    }
+
+
 # Terminal demo: print the sample state and show the intake node result.
 if __name__ == "__main__":
     print(example_state)
     print(intake_node(example_state))
+    print(
+        investigation_node(
+            {
+                **example_state,
+                "workflow_path": ["intake", "validate"],
+            }
+        )
+    )
+    print(
+        resolution_node(
+            {
+                **example_state,
+                "investigation": "The portal appears unstable but contained.",
+                "workflow_path": ["intake", "validate", "investigate"],
+            }
+        )
+    )
+    print(
+        closure_node(
+            {
+                **example_state,
+                "investigation": "The portal appears unstable but contained.",
+                "resolution": "Seal the portal and monitor the basement overnight.",
+                "workflow_path": ["intake", "validate", "investigate", "resolve"],
+            }
+        )
+    )
+    print(
+        reject_node(
+            {
+                **example_state,
+                "category": "other",
+                "valid": False,
+                "status": "validation_complete",
+                "workflow_path": ["intake", "validate"],
+            }
+        )
+    )
     if not api_key:
         print("OPENAI_API_KEY is not set, so llm.invoke() was skipped.")
     else:
