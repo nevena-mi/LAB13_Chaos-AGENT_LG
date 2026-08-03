@@ -9,5 +9,6 @@
 - Step 7: `resolution_node` is implemented and `test_7_resolution_node.py` demonstrates it.
 - Step 8: `closure_node` is implemented and `test_8_closure_noda.py` demonstrates it.
 - Step 9: `reject_node` is implemented and `test_9_reject_node.py` demonstrates it.
+- Step 10: the graph is built and `test_10_build_the_graph.py` demonstrates it.
 - `normalobjects_langchain.py` stays as reference context only.
-- Next planned work: graph wiring and later routing logic.
+- Next planned work: broader workflow testing and execution tracing.

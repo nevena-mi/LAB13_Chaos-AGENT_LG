@@ -4,6 +4,7 @@ from typing import TypedDict
 
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
+from langgraph.graph import END, StateGraph
 
 
 # Shared workflow state passed between LangGraph nodes.
@@ -195,6 +196,38 @@ def reject_node(state: ComplaintState) -> ComplaintState:
     }
 
 
+# Graph routing helper: choose the next step after validation.
+def route_after_validation(state: ComplaintState) -> str:
+    return "investigate" if state["valid"] else "reject"
+
+
+# Build and compile the full workflow graph for the lab.
+workflow = StateGraph(ComplaintState)
+workflow.add_node("intake", intake_node)
+workflow.add_node("validate", validation_node)
+workflow.add_node("investigate", investigation_node)
+workflow.add_node("resolve", resolution_node)
+workflow.add_node("close", closure_node)
+workflow.add_node("reject", reject_node)
+
+workflow.set_entry_point("intake")
+workflow.add_edge("intake", "validate")
+workflow.add_conditional_edges(
+    "validate",
+    route_after_validation,
+    {
+        "investigate": "investigate",
+        "reject": "reject",
+    },
+)
+workflow.add_edge("investigate", "resolve")
+workflow.add_edge("resolve", "close")
+workflow.add_edge("close", END)
+workflow.add_edge("reject", END)
+
+app = workflow.compile()
+
+
 # Terminal demo: print the sample state and show the intake node result.
 if __name__ == "__main__":
     print(example_state)
@@ -237,6 +270,10 @@ if __name__ == "__main__":
             }
         )
     )
+    try:
+        print(app.get_graph().draw_ascii())
+    except ImportError:
+        print("Install grandalf to draw the graph as ASCII.")
     if not api_key:
         print("OPENAI_API_KEY is not set, so llm.invoke() was skipped.")
     else:

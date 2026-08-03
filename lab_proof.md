@@ -163,3 +163,44 @@ Example 3 output:
 {'complaint': 'I need more socks and better vibes.', 'category': 'other', 'valid': False, 'investigation': '', 'resolution': '', 'final_response': 'Complaint rejected because it is unrelated to the Downside Up workflow.', 'status': 'rejection_complete', 'workflow_path': ['intake', 'validate', 'reject']}
 ----------------------------------------
 
+## 10
+test_10_build_the_graph.py
+            +-----------+           
+            | __start__ |           
+            +-----------+           
+                  *                 
+                  *                 
+                  *                 
+              +--------+            
+              | intake |            
+              +--------+            
+                  *                 
+                  *                 
+                  *                 
+            +----------+            
+            | validate |            
+            +----------+            
+            ...        ...          
+           .              .         
+         ..                ...      
++-------------+               .     
+| investigate |               .     
++-------------+               .     
+        *                     .     
+        *                     .     
+        *                     .     
+  +---------+                 .     
+  | resolve |                 .     
+  +---------+                 .     
+        *                     .     
+        *                     .     
+        *                     .     
+   +-------+            +--------+  
+   | close |            | reject |  
+   +-------+            +--------+  
+            ***        ***          
+               *      *             
+                **  **              
+             +---------+            
+             | __end__ |            
+             +---------+          
