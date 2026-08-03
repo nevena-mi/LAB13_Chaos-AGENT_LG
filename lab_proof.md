@@ -306,3 +306,6 @@ investigation:
 resolution: 
 final_response: Complaint rejected because it is unrelated to the Downside Up workflow.
 ----------------------------------------
+
+### has to be improved! 
+tool output and LLM output are simply concatenated, the final response lacks a clear structure
