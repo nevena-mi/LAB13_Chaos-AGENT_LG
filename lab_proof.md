@@ -204,3 +204,105 @@ test_10_build_the_graph.py
              +---------+            
              | __end__ |            
              +---------+          
+
+
+## 11
+python test_11_test_workflow.py
+Example 1 complaint:
+There is a portal under the school gym.
+category: portal
+workflow_path: ['intake', 'validate', 'investigate', 'resolve', 'close']
+status: closure_complete
+final_response: Thank you for bringing this concern to our attention. After a thorough investigation, we have confirmed that the portal under the school gym is a secured maintenance access point that complies with all safety standards and poses no risk to students or staff. Regular inspections are conducted to ensure its condition is maintained. As such, no further action is necessary. We appreciate your vigilance in helping us maintain a safe environment.
+----------------------------------------
+Example 2 complaint:
+A monster keeps following the car at night.
+category: monster
+workflow_path: ['intake', 'validate', 'investigate', 'resolve', 'close']
+status: closure_complete
+final_response: Dear [Customer Name],
+
+Thank you for bringing your concern to our attention. After a thorough investigation, we found no evidence of a monster following your car at night. The experience is likely due to natural shadows, light reflections, or local wildlife. While no safety threats were identified, we recommend staying alert and reporting any new concerns. We will continue to monitor the situation to ensure your safety.
+
+Please feel free to reach out if you have any further questions.
+
+Sincerely,  
+[Your Name/Team]
+----------------------------------------
+Example 3 complaint:
+My psychic dreams are getting louder.
+category: psychic
+workflow_path: ['intake', 'validate', 'investigate', 'resolve', 'close']
+status: closure_complete
+final_response: Thank you for sharing your experience with us. We have reviewed your concern about your psychic dreams feeling louder and provided some suggestions to help you manage these experiences. If you need further assistance or have any other questions, please don't hesitate to contact us. Your complaint has been addressed and the case is now closed.
+----------------------------------------
+Example 4 complaint:
+The power keeps going out whenever it rains.
+category: environmental
+workflow_path: ['intake', 'validate', 'investigate', 'resolve', 'close']
+status: closure_complete
+final_response: Thank you for bringing the power outages during rain to our attention. We have investigated the issue and identified that aging infrastructure and drainage problems were causing the interruptions. To resolve this, we are upgrading the electrical equipment to weather-resistant standards and improving the local drainage system. These actions will help prevent future outages during heavy rainfall. We appreciate your patience as we work to enhance the reliability of your power supply.
+----------------------------------------
+Example 5 complaint:
+My toaster is emotionally unavailable.
+category: other
+workflow_path: ['intake', 'validate', 'reject']
+status: rejection_complete
+final_response: Complaint rejected because it is unrelated to the Downside Up workflow.
+----------------------------------------
+
+## 11-12 workflow with tools/helper functions
+
+python test_12_reuse_previous_tools.py
+Example 1 complaint:
+There is a portal under the school gym.
+category: portal
+workflow_path: ['intake', 'validate', 'investigate', 'resolve', 'close']
+investigation: Ah, the ol’ Hawkins Town Records—aka the official “How We Pretended Not to Notice the Upside-Down” log. According to this gem, the town’s been playing host to more portal hopping under Hawkins Lab than a squirrel on espresso. 
+
+Repeated portal activity? More like the Upside-Down was trying to RSVP to every Hawkins party and the lab forgot to send it a “no thanks” RSVP back. You can almost imagine a bunch of slightly panicked scientists furiously scribbling “Do Not Open” signs while a demogorgon casually strolls through like it owns the place. 
+
+So yeah—while the town meetings probably debated potholes and bake sales, the real drama was happening underground, with portals popping open like cosmic whack-a-moles. Guess the town records just didn’t want to cause a panic… or a batch of Eleven-level spoilers. Classic Hawkins.
+resolution: Seal the dimensional rift around There is a portal under the school gym..
+Redirect strange energy away from There is a portal under the school gym..
+Resolution: The investigation confirms that there is indeed a dimensional rift beneath the school gym, linked to repeated portal activity in the area. To ensure safety, the rift will be carefully sealed and all strange energies redirected away from the school grounds, preventing any further breaches or risks to students and staff.
+final_response: Thank you for bringing this to our attention. After a thorough investigation, we have confirmed the presence of a dimensional rift beneath the school gym. The rift has now been securely sealed, and all unusual energies have been redirected away from the school grounds to ensure the safety of students and staff. The issue is resolved.
+----------------------------------------
+Example 2 complaint:
+A monster keeps following the car at night.
+category: monster
+workflow_path: ['intake', 'validate', 'investigate', 'resolve', 'close']
+investigation: The Demogorgon suggests opening another portal. Problems rarely survive that.
+resolution: Seal the dimensional rift around A monster keeps following the car at night..
+Convince the Demogorgon to handle A monster keeps following the car at night. instead.
+After consulting with the Demogorgon, we convinced it to handle the monster following the car at night. Using its expertise, the Demogorgon opened a new portal, which sealed the dimensional rift allowing the monster to cross over. With the rift closed, the monster no longer follows the car, resolving the issue completely.
+final_response: Thank you for bringing this to our attention. After consulting with the Demogorgon, it successfully sealed the dimensional rift by opening a new portal, preventing the monster from following the car. The issue has now been fully resolved.
+----------------------------------------
+Example 3 complaint:
+My psychic dreams are getting louder.
+category: psychic
+workflow_path: ['intake', 'validate', 'investigate', 'resolve', 'close']
+investigation: Eleven focuses her powers and senses a disturbance from the Upside Down.
+resolution: Convince the Demogorgon to handle My psychic dreams are getting louder. instead.
+Ask Eleven to focus her powers on My psychic dreams are getting louder..
+Resolution: Eleven concentrated her powers, sensing the disturbance in the Upside Down linked to your increasingly loud psychic dreams. She persuaded the Demogorgon to intervene and manage the source of your unsettling dreams, effectively calming your psychic turmoil and restoring your peace of mind.
+final_response: Your complaint has been successfully resolved. Eleven focused her powers to identify the disturbance tied to your loud psychic dreams, and the Demogorgon has taken over managing the source, bringing you peace and calm once again.
+----------------------------------------
+Example 4 complaint:
+Our friends keep worrying about the power outage.
+category: environmental
+workflow_path: ['intake', 'validate', 'investigate', 'resolve', 'close']
+investigation: Lucas says: Trust your friends, but keep a backup plan.
+resolution: Convince the Demogorgon to handle Our friends keep worrying about the power outage. instead.
+Redirect strange energy away from Our friends keep worrying about the power outage..
+Resolution: We understand your friends are concerned about the power outage. Rest assured, we’ve convinced the Demogorgon to manage the situation directly, redirecting any strange energy away from your group. This way, your friends can relax knowing there’s a backup plan in place to keep things safe and stable.
+final_response: Thank you for bringing your concerns to us. We’ve taken steps to address the power outage worry by having the Demogorgon manage the situation and redirect any strange energy away from your friends. You can rest easy knowing everything is under control.
+----------------------------------------
+Example 5 complaint:
+My toaster is emotionally unavailable.
+category: other
+workflow_path: ['intake', 'validate', 'reject']
+investigation: 
+resolution: 
+final_response: Complaint rejected because it is unrelated to the Downside Up workflow.
+----------------------------------------

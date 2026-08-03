@@ -1,5 +1,6 @@
 # Core standard-library and LangChain imports for the lab workflow.
 import os
+import random
 from typing import TypedDict
 
 from dotenv import load_dotenv
@@ -40,6 +41,119 @@ llm = ChatOpenAI(
     model="gpt-4.1-mini",
     api_key=api_key,
 )
+
+
+# Plain helper functions copied from the earlier LangChain lab.
+def consult_demogorgon(complaint: str) -> str:
+    """Ask the Demogorgon for questionable advice."""
+
+    responses = [
+        "The Demogorgon growls: Ignore the complaint and eat the evidence.",
+        "The Demogorgon suggests opening another portal. Problems rarely survive that.",
+        "The Demogorgon blames Vecna. It usually works.",
+    ]
+
+    return random.choice(responses)
+
+
+def check_hawkins_records(query: str) -> str:
+    """Search Hawkins town records for unusual events."""
+
+    records = {
+        "portal": (
+            "Town records mention repeated portal activity beneath Hawkins Lab."
+        ),
+        "monsters": (
+            "Several reports describe unidentified creatures from the Upside Down."
+        ),
+        "psychics": (
+            "Confidential files reference children with unusual psychic abilities."
+        ),
+        "electricity": (
+            "Power outages frequently coincide with interdimensional events."
+        ),
+    }
+
+    query = query.lower()
+
+    for key, value in records.items():
+        if key in query:
+            try:
+                response = llm.invoke(
+                    f"""
+                    You are a creative Hawkins archivist.
+
+                    Explain this record in a humorous
+                    Stranger Things style.
+
+                    Retrieved record:
+                    {value}
+                    """
+                )
+                return response.content
+            except Exception:
+                return f"Hawkins archives note: {value}"
+
+    return "No matching record was found in the Hawkins archives."
+
+
+def cast_interdimensional_spell(
+    problem: str, creativity_level: str = "medium"
+) -> str:
+    """Cast an interdimensional spell to solve a problem."""
+
+    multiplier = {
+        "low": 1,
+        "medium": 2,
+        "high": 3,
+    }
+
+    spells = [
+        f"Seal the dimensional rift around {problem}.",
+        f"Ask Eleven to focus her powers on {problem}.",
+        f"Redirect strange energy away from {problem}.",
+        f"Convince the Demogorgon to handle {problem} instead.",
+    ]
+
+    number = min(multiplier.get(creativity_level.lower(), 2), len(spells))
+    selected = random.sample(spells, number)
+
+    return "\n".join(selected)
+
+
+def gather_party_wisdom(question: str) -> str:
+    """Ask the party members for advice based on a topic."""
+
+    wisdom = {
+        "monster": (
+            "Mike says: Stay together and never underestimate the monsters."
+        ),
+        "portal": (
+            "Dustin says: A portal requires science, curiosity, and snacks."
+        ),
+        "friend": "Lucas says: Trust your friends, but keep a backup plan.",
+        "mind": "Will says: Listen carefully. The Upside Down leaves clues.",
+    }
+
+    question = question.lower()
+
+    for key, value in wisdom.items():
+        if key in question:
+            return value
+
+    return "The party gathers for a huddle, but nobody has a clear answer yet."
+
+
+def consult_eleven(question: str) -> str:
+    """Ask Eleven for psychic guidance."""
+
+    responses = [
+        "Eleven focuses her powers and senses a disturbance from the Upside Down.",
+        "Eleven says: Use your mind, trust your friends, and never ignore strange signals.",
+        "Eleven concentrates silently and warns that the problem may be bigger than it appears.",
+    ]
+
+    return random.choice(responses)
 
 
 # Intake node: classify the complaint and record that intake ran.
@@ -103,21 +217,18 @@ def validation_node(state: ComplaintState) -> ComplaintState:
 # Investigation node: ask the LLM for a short category-aware summary.
 def investigation_node(state: ComplaintState) -> ComplaintState:
     workflow_path = state["workflow_path"] + ["investigate"]
-    prompt = (
-        "You are helping with a Downside Up complaint workflow.\n"
-        f"Complaint: {state['complaint']}\n"
-        f"Category: {state['category']}\n"
-        "Write a short investigation summary with the most relevant findings."
-    )
+    category = state["category"]
 
-    try:
-        response = llm.invoke(prompt)
-        investigation = response.content
-    except Exception:
-        investigation = (
-            f"Investigation could not be completed for the {state['category']} "
-            "complaint in this environment."
-        )
+    if category == "portal":
+        investigation = check_hawkins_records(state["complaint"])
+    elif category == "monster":
+        investigation = consult_demogorgon(state["complaint"])
+    elif category == "psychic":
+        investigation = consult_eleven(state["complaint"])
+    elif category == "environmental":
+        investigation = gather_party_wisdom(state["complaint"])
+    else:
+        investigation = "No Downside Up investigation tools apply to this complaint."
 
     return {
         **state,
@@ -130,18 +241,21 @@ def investigation_node(state: ComplaintState) -> ComplaintState:
 # Resolution node: turn complaint context into a short fix.
 def resolution_node(state: ComplaintState) -> ComplaintState:
     workflow_path = state["workflow_path"] + ["resolve"]
+    spell_output = cast_interdimensional_spell(state["complaint"])
     prompt = (
         "You are helping with a Downside Up complaint workflow.\n"
         f"Complaint: {state['complaint']}\n"
         f"Investigation: {state['investigation']}\n"
+        f"Spell guidance:\n{spell_output}\n"
         "Write a short resolution that directly addresses the complaint."
     )
 
     try:
         response = llm.invoke(prompt)
-        resolution = response.content
+        resolution = f"{spell_output}\n{response.content}"
     except Exception:
         resolution = (
+            f"{spell_output}\n"
             "Resolution could not be generated in this environment, but the "
             "complaint should be handled with a practical Downside Up fix."
         )

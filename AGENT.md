@@ -10,5 +10,7 @@
 - Step 8: `closure_node` is implemented and `test_8_closure_noda.py` demonstrates it.
 - Step 9: `reject_node` is implemented and `test_9_reject_node.py` demonstrates it.
 - Step 10: the graph is built and `test_10_build_the_graph.py` demonstrates it.
+- Step 11: `test_11_test_workflow.py` demonstrates end-to-end workflow execution.
+- Step 12: previous LangChain tools are reused in `normalobjects_langgraph.py` and `test_12_reuse_previous_tools.py` demonstrates them.
 - `normalobjects_langchain.py` stays as reference context only.
-- Next planned work: broader workflow testing and execution tracing.
+- Next planned work: execution visualization and path tracing.
