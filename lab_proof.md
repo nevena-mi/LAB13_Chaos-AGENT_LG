@@ -309,3 +309,10 @@ final_response: Complaint rejected because it is unrelated to the Downside Up wo
 
 ### has to be improved! 
 tool output and LLM output are simply concatenated, the final response lacks a clear structure
+
+
+### improvements
+1- the structure is improved, keywords excluded from validation, closure node does not rewrite the resolution but uses it
+2- prompt also changed to more creativity and howkins language
+
+3- trying out streamlit options, tricky with background image, therefore just the opening image

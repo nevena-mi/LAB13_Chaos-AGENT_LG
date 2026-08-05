@@ -185,26 +185,56 @@ def validation_node(state: ComplaintState) -> ComplaintState:
     complaint = state["complaint"].lower()
     workflow_path = state["workflow_path"] + ["validate"]
 
-    valid = any(
-        keyword in complaint
-        for keyword in (
-            "portal",
-            "rift",
-            "gate",
-            "monster",
-            "demogorgon",
-            "creature",
-            "psychic",
-            "eleven",
-            "mind",
-            "electric",
-            "power",
-            "outage",
-            "storm",
-            "hawkins",
-            "upside down",
-        )
-    )
+    #valid = any(
+    #    keyword in complaint
+    #    for keyword in (
+    #        "portal", "rift","gate","monster","demogorgon","creature","psychic",
+    #        "eleven","mind","electric","power","outage","storm","hawkins","upside down",
+    #    )
+    #)
+
+    prompt = f"""
+    You are validating complaints for the Downside Up Complaint Processor.
+
+    Accept complaints that could reasonably be explained in a humorous
+    Stranger Things / Downside Up universe.
+
+    Accept examples:
+    - lights behaving strangely
+    - power outages
+    - monsters
+    - portals
+    - strange noises
+    - missing objects
+    - unusual events
+    - mysterious behaviour
+    - unexplained problems
+
+    Reject ONLY complaints that are:
+    - completely unrelated
+    - meaningless text
+    - random characters
+    - empty
+
+    Complaint:
+    "{state["complaint"]}"
+
+    Respond with ONLY:
+
+    VALID
+
+    or
+
+    INVALID
+    """
+
+    try:
+        response = llm.invoke(prompt)
+        valid = response.content.strip().upper() == "VALID"
+
+    except Exception:
+        # Safe fallback if the LLM is unavailable.
+        valid = True
 
     return {
         **state,
@@ -242,22 +272,49 @@ def investigation_node(state: ComplaintState) -> ComplaintState:
 def resolution_node(state: ComplaintState) -> ComplaintState:
     workflow_path = state["workflow_path"] + ["resolve"]
     spell_output = cast_interdimensional_spell(state["complaint"])
-    prompt = (
-        "You are helping with a Downside Up complaint workflow.\n"
-        f"Complaint: {state['complaint']}\n"
-        f"Investigation: {state['investigation']}\n"
-        f"Spell guidance:\n{spell_output}\n"
-        "Write a short resolution that directly addresses the complaint."
-    )
+    prompt = f"""
+    You are the official Downside Up Complaint Processor.
+
+    Every complaint should receive a humorous Stranger Things-style explanation.
+
+    Assume strange events are usually caused by portals, monsters,
+    psychic interference, or Hawkins anomalies.
+
+    Keep the tone playful but helpful.
+
+    Complaint:
+    {state["complaint"]}
+
+    Investigation:
+    {state["investigation"]}
+
+    Spell guidance:
+    {spell_output}
+
+    Write a creative resolution that:
+    - uses the investigation findings
+    - incorporates the spell guidance naturally
+    - sounds like an official Downside Up report
+    - ends with one practical recommendation
+    """
 
     try:
         response = llm.invoke(prompt)
-        resolution = f"{spell_output}\n{response.content}"
+        # resolution = f"{spell_output}\n{response.content}"
+        # resolution = response.content
+        resolution = (
+        f"🪄 **Spell Applied**\n"
+        f"{spell_output}\n\n"
+        f"💡 **Resolution**\n"
+        f"{response.content}"
+        )
+    
+
     except Exception:
         resolution = (
             f"{spell_output}\n"
-            "Resolution could not be generated in this environment, but the "
-            "complaint should be handled with a practical Downside Up fix."
+            "Resolution could not be generated in this environment. "
+            "Please contact the Hawkins Interdimensional Response Team."
         )
 
     return {
@@ -267,7 +324,7 @@ def resolution_node(state: ComplaintState) -> ComplaintState:
         "workflow_path": workflow_path,
     }
 
-
+'''
 # Closure node: turn the work done into a final response.
 def closure_node(state: ComplaintState) -> ComplaintState:
     workflow_path = state["workflow_path"] + ["close"]
@@ -293,7 +350,26 @@ def closure_node(state: ComplaintState) -> ComplaintState:
         "status": "closure_complete",
         "workflow_path": workflow_path,
     }
+'''
 
+# Closure node: finalize the complaint without rewriting the resolution.
+def closure_node(state: ComplaintState) -> ComplaintState:
+
+    workflow_path = state["workflow_path"] + ["close"]
+
+    final_response = (
+        "📋 **Downside Up Complaint Closed**\n\n"
+        f"{state['resolution']}\n\n"
+        "✅ **Status:** Complaint successfully resolved by the "
+        "Downside Up Paranormal Complaints Division."
+    )
+
+    return {
+        **state,
+        "final_response": final_response,
+        "status": "closure_complete",
+        "workflow_path": workflow_path,
+    }
 
 # Reject node: end the workflow for invalid complaints.
 def reject_node(state: ComplaintState) -> ComplaintState:
